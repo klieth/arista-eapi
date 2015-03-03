@@ -23,13 +23,16 @@ module Arista
 
       attr_accessor :code, :response, :results
 
-      def initialize(commands, body)
+      def initialize(hostname, commands, body)
         self.response = JSON.parse(body)
         self.results = []
 
         if response['error']
           code = response['error']['code']
-          raise code < 0 ? Exception.new(response['message']) : ERROR_CODES[code]
+          errors = response['error']['data'].select do |item|
+            item.has_key? "errors"
+          end[0]['errors']
+          raise code < 0 ? Exception.new(response['message']) : ERROR_CODES[code].new("ERROR on #{hostname} :: #{response['error']['message'].strip} -- #{errors}")
         end
 
         commands.each_with_index do |cmd, idx|
@@ -68,7 +71,7 @@ module Arista
           else
             value
          end
-      end    
+      end
     end
   end
 end

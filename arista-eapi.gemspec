@@ -22,5 +22,4 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake"
 
   spec.add_dependency "rest-client"
-  spec.add_dependency 'json', '~> 1.7.7'
 end
